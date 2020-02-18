@@ -5,8 +5,7 @@ import java.util.*;
 public class Room {
     String name;
     int numStudent, numSeat, numClm, brdrFront;
-    List<Student> students;
-    Integer[] seat;
+    List<Student> students, seat;
     Scanner sc = new Scanner(System.in);
 
     Room(String name, int numStudent, int numSeat, int numClm, int brdrFront){
@@ -87,43 +86,42 @@ public class Room {
     }
 
     public void setSeat(int mode){  //座席指定メソッド
-        seat = new Integer[numSeat];
+        Student dummy = new Student(0, false, new ArrayList<Integer>(Student.getNumLike()));
+        seat = new ArrayList<Student>(numSeat);
+        for(int i=0; i<numSeat; i++)
+            seat.add(dummy);
+
         if(mode == 0){   /*mode == 0: ランダム*/
             Random rand = new Random();
+            Boolean[] flg = new Boolean[numSeat];
             int count = 0;
             for(int i=0; count<numStudent; i++){
                 int tmp = rand.nextInt(numSeat);
-                if(seat[tmp] == null){
-                    seat[tmp] = students.get(i).getNumber();
+                if(flg[tmp] == null){
+                    flg[tmp] = true;
+                    seat.set(tmp, students.get(i));
                     count++;
                 }else i--;
             }
         }
         else if(mode == 1)  /*mode == 1: 順番*/
         for(int i=0; i<numStudent; i++)
-            seat[i] = students.get(i).getNumber();
+            seat.set(i, students.get(i));
     }
     public void showSeat(){ //座席表表示メソッド
         System.out.println(this.name + "の座席表を表示します.");
         System.out.println("\n前方");
         for(int i=0; i<numSeat; i++){
             if(i > 0 && i % numClm == 0)System.out.print("\n");
-            System.out.print(String.format("%05d", seat[i]) + " ");
+            if(seat.get(i).getNumber() == 0)System.out.print("----- ");
+            else System.out.print(String.format("%05d", seat.get(i).getNumber()) + " ");
         }
         System.out.println("\n後方");
     }
     public void replaceSeat(int from, int to){  //指定座席入れ替えメソッド
-        if(seat[from] != null && seat[to] != null){
-            int tmp = seat[to];
-            seat[to] = seat[from];
-            seat[from] = tmp;
-        }else if(seat[from] == null){
-            seat[from] = seat[to];
-            seat[to] = null;
-        }else if(seat[to] == null){
-            seat[to] = seat[from];
-            seat[from] = null;
-        }
+        Student tmp = seat.get(to);
+        seat.set(to, seat.get(from));
+        seat.set(from, tmp);
     }
     public void satisfactionCalc(){
         
