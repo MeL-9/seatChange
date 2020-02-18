@@ -4,13 +4,12 @@ import java.util.*;
 
 public class Room {
     String name;
-    int numStudent, numSeat, numClm, brdrFront;
+    int numStudent = 0, numSeat, numClm, brdrFront;
     List<Student> students, seat;
     Scanner sc = new Scanner(System.in);
 
-    Room(String name, int numStudent, int numSeat, int numClm, int brdrFront){
+    Room(String name, int numSeat, int numClm, int brdrFront){
         setName(name);
-        setNumStudent(numStudent);
         setNumSeat(numSeat);
         setNumClm(numClm);
         setBrdrFront(brdrFront);
@@ -19,14 +18,12 @@ public class Room {
     Room(String name){
         Random rand = new Random();
 
-        int numStudent = rand.nextInt(40) + 1;  //1-40の範囲で  //numStudent = numSeatにすると空席がなくなる
         int numSeat = rand.nextInt(11) + 30; //30-40の範囲で
         while(numSeat < numStudent)numSeat = rand.nextInt(11) + 30;
         int numClm = rand.nextInt(5) + 5; //5-9の範囲で
         int brdrFront = rand.nextInt(3) + 1; //1-3の範囲で
 
         setName(name);
-        setNumStudent(numStudent);
         setNumSeat(numSeat);
         setNumClm(numClm);
         setBrdrFront(brdrFront);
@@ -38,14 +35,17 @@ public class Room {
     public void setNumClm(int numClm) {this.numClm = numClm;}
     public void setBrdrFront(int brdrFront){this.brdrFront = brdrFront;}
 
-    public void mkClass(boolean rand){  //学生情報登録メソッド
-        if(rand){
-            for(int i=0; i<numStudent; i++){
+    public void mkClass(boolean rnd){  //学生情報登録メソッド
+        if(rnd){
+            Random rand = new Random();
+            int numStudent = rand.nextInt(40) + 1;  //1-40の範囲で  //numStudent = numSeatにすると空席がなくなる
+            setNumStudent(numStudent);
+
+            for(int i=0; i<this.numStudent; i++){
                 Student student = new Student(i + 1);
                 students.add(student);
             }
         }else{
-            this.numStudent = numSeat;
             while(this.numStudent >= numSeat){
                 System.out.print("登録する学生数を入力(座席数は" + numSeat + "席): ");
                 this.numStudent = sc.nextInt();
