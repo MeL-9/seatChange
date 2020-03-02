@@ -36,7 +36,9 @@ public class Main {
                 System.out.print("手動で作成します.\n教室名を入力: ");
                 name = sc.next();
                 numSeat = inputNum("座席数を入力: ", sc);
-                numClm = inputNum("列数を入力: ", sc);
+                numClm = numSeat + 1;
+                while(numClm > numSeat)
+                    numClm = inputNum("列数を入力: ", sc);
                 System.out.print("前方希望を有効にしますか？( y / n ): ");
                 if(sc.next().charAt(0) == 'y')useFront = true;
                 if(useFront)
@@ -133,9 +135,9 @@ public class Main {
             default:
                 System.out.println("戻ります.\n");
         }
-        System.out.println("満足度を表示する番号を選んでください.(教室全体の満足度の場合は0)");
+        System.out.println("満足度を表示する学生の番号を選んでください.(教室全体の満足度の場合は0)");
         input = sc.next();
-        room.showSatisfaction(Integer.parseInt(input) - 1);
+        room.showSatisfaction(Integer.parseInt(input));
     }
 
     public static void main(String[] args) {

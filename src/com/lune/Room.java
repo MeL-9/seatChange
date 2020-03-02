@@ -84,35 +84,35 @@ public class Room {
         }else{
             String msg = "登録する学生数を入力(座席数は" + numSeat + "席): ";
             this.numStudent = 0;
-            while(this.numStudent == 0 || this.numStudent >= numSeat)
+            while(this.numStudent == 0 || this.numStudent > numSeat)
                 this.numStudent = Main.inputNum(msg, sc);
 
-            System.out.print("前方希望機能を利用しますか？ y / n: ");
-            String tmpStr = sc.next();
-            if(tmpStr.charAt(0) == 'y')useFront = true;
-            else useFront = false;
+//            System.out.print("前方希望機能を利用しますか？ y / n: ");
+//            String tmpStr = sc.next();
+//            if(tmpStr.charAt(0) == 'y')useFront = true;
+//            else useFront = false;
             for(int i=0; i<numStudent; i++){
-                int number;
+                int number = i + 1;
                 boolean front = false;
                 List<Integer> like = new ArrayList<Integer>();
 
-                msg = (i + 1) + "番目の学生の学籍番号を入力: ";
-                number = Main.inputNum(msg, sc);
+                System.out.println((i + 1) + "番の学生の情報を入力.");
                 if(useFront){
                     System.out.print(number + "番は前方を希望しますか？ y / n: ");
-                    tmpStr = sc.next();
+                    String tmpStr = sc.next();
                     if(tmpStr.charAt(0) == 'y')front = true;
                 }
                 System.out.println(number + "番が近くを希望する学生の番号を入力(" + Student.getNumLike() + "人以内)\nいない場合は0を入力");
                 while(like.size() < Student.getNumLike()){
                     msg = (like.size() + 1) + "人目: ";
                     int tmpInt = Main.inputNum(msg, sc);
-                    if(!like.contains(tmpInt))like.add(tmpInt);
+                    if(tmpInt == 0)like.add(tmpInt);
+                    else if(!like.contains(tmpInt))like.add(tmpInt);
                 }
 
                 Student student = new Student(number, front, like);
                 students.add(student);
-                System.out.println((i + 1) + "番目の情報入力完了(残り" + (numStudent - (i + 1)) + "人)");
+                System.out.println((i + 1) + "番目の情報入力完了(残り" + (numStudent - (i + 1)) + "人)\n");
             }
         }
     }
@@ -145,18 +145,20 @@ public class Room {
             Random rand = new Random();
             Boolean[] flg = new Boolean[numSeat];
             int count = 0;
-            for(int i=0; count<numStudent; i++){
+            for(int i=0; count<numSeat; i++){
                 int rnd = rand.nextInt(numSeat);
                 if(flg[rnd] == null){
                     flg[rnd] = true;
-                    seat.set(rnd, students.get(i));
+                    if(i < numStudent)seat.set(rnd, students.get(i));
+                    else seat.set(rnd, dummy);
                     count++;
                 }else i--;
             }
         }
         else if(mode == 1)  /*mode == 1: 順番*/
-            for(int i=0; i<numStudent; i++)
-                seat.set(i, students.get(i));
+            for(int i=0; i<numSeat; i++)
+                if(i < numStudent)seat.set(i, students.get(i));
+                else seat.set(i, dummy);
         else if(mode == 2){ /*mode == 2: 満足度考慮A*/
             /*満足度考慮席替え*/
         }else if(mode == 3){ /*mode == 3: 満足度考慮B*/
@@ -247,20 +249,22 @@ public class Room {
             
         }
     }
-    public void showSatisfaction(int seatNumber){   /*満足度表示メソッド*/
-        if(seatNumber == -1){
+    public void showSatisfaction(int number){   /*満足度表示メソッド*/
+        number--;
+        if(number == -1){
             int sumSatisfaction = 0, minSatisfaction = Student.getNumLike() + 1;
-            for (Student student : seat){
-                sumSatisfaction += student.getSatisfaction();
+            for (Student student : students){
+                if(student.getNumber() != -1)sumSatisfaction += student.getSatisfaction();
                 if(student.getSatisfaction() < minSatisfaction)minSatisfaction = student.getSatisfaction();
             }
-            System.out.println("この教室の満足度の平均は" + (double)sumSatisfaction / seat.size());
+            System.out.println("この教室の満足度の平均は" + (double)sumSatisfaction / students.size());
             System.out.println("この教室の満足度の最低値は" + minSatisfaction);
-        }else if(seatNumber >= 0 && seatNumber < numSeat){
-            System.out.println((seatNumber + 1) + "番の席の"
-                    + seat.get(seatNumber).getNumber() + "番の学生の満足度は" + seat.get(seatNumber).getSatisfaction());
-            System.out.print(seat.get(seatNumber).getNumber() + "番の学生のlikeは:");
-            for(int tmp :seat.get(seatNumber).getLike())System.out.print(tmp + ",");
+        }else if(number >= 0 && number < numSeat){
+            System.out.println((number + 1) + "番の席の"
+                    + students.get(number).getNumber() + "番の学生の満足度は" + students.get(number).getSatisfaction());
+            if(students.get(number).getFront())System.out.println(students.get(number).getNumber() + "番の学生は前方希望.");
+            System.out.print(students.get(number).getNumber() + "番の学生のlikeは:");
+            for(int tmp :students.get(number).getLike())System.out.print(tmp + " ");
             System.out.print("\n");
         }
         else System.out.println("範囲外の番号");
