@@ -3,7 +3,8 @@ package com.lune;
 import java.util.*;
 
 public class Main {
-    static int inputNum(String msg, Scanner sc) {   /*数値が入力されなければ繰り返すメソッド*/
+    /*数値が入力されなければ繰り返すメソッド*/
+    static int inputNum(String msg, Scanner sc) {
         while(true) {
             System.out.print(msg);
             try {return Integer.parseInt(sc.next());}
@@ -76,12 +77,13 @@ public class Main {
         if(room.getNumStudent() > 0){
             System.out.println("以下のように学生を登録しました.\n");
             room.showStudents(0);
+            room.setSeat(1);
         }
     }
 
     public static void changeSeat(Room room){
         Scanner sc = new Scanner(System.in);
-        System.out.println("席替えを行います.\n席替え方法を選んでください.(0: 戻る, 1: ランダム, 2: 登録順, 3: 満足度考慮A, 3: 満足度考慮B");
+        System.out.println("席替えを行います.\n席替え方法を選んでください.(0: 戻る, 1: ランダム, 2: 登録順, 3: 満足度考慮"/*A, 4: 満足度考慮B)"*/);
         String input = sc.next();
         char command = input.charAt(0);
 
@@ -98,10 +100,10 @@ public class Main {
                 room.setSeat(2);
                 System.out.println("8近傍の希望者の数を指標に満足度を考慮し席替えしました.\n");
                 break;
-            case '4':
+            /*case '4':
                 room.setSeat(3);
                 System.out.println("希望者との距離の平均の逆数を指標に満足度を考慮し席替えしました.");
-                break;
+                break;*/
             default:
                 System.out.println("戻ります.");
                 return;
@@ -119,7 +121,7 @@ public class Main {
 
     public static void calculateSatisfaction(Room room){
         Scanner sc = new Scanner(System.in);
-        System.out.println("満足度を表示します.\n満足度の計算方法を選んでください.(0: 戻る, 1: 8近傍の希望者の数, 2: 希望者との距離の平均の逆数");
+        /*System.out.println("満足度を表示します.\n満足度の計算方法を選んでください.(0: 戻る, 1: 8近傍の希望者の数, 2: 希望者との距離の平均の逆数)");
         String input = sc.next();
         char command = input.charAt(0);
 
@@ -134,9 +136,10 @@ public class Main {
                 break;
             default:
                 System.out.println("戻ります.\n");
-        }
+        }*/
         System.out.println("満足度を表示する学生の番号を選んでください.(教室全体の満足度の場合は0)");
-        input = sc.next();
+        room.calculateSatisfaction(0);
+        String input = sc.next();
         room.showSatisfaction(Integer.parseInt(input));
     }
 
@@ -170,17 +173,17 @@ public class Main {
                 case '2':
                     if(room == null)
                         System.out.println("教室が作成されていません");
-                    else {
+                    else if(!room.students.isEmpty()){
+                        System.out.println("登録済みの学生が上書きされます(上書きしない場合は戻るを選んでください).");
                         registerStudent(room);
-                        room.setSeat(1);
-                    }
+                    }else
+                        registerStudent(room);
                     break;
                 case '3':
                     if(room == null)
                         System.out.println("教室が作成されていません");
                     else
                         room.showSeat();
-
                     break;
                 case '4':
                     if(room == null)
